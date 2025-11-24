@@ -109,50 +109,62 @@ const LeavePage = () => {
           <table className="form-table">
             <tbody>
               <tr>
-                <td className="label-cell" style={{width: '15%'}}>If Half Day</td>
-                <td style={{width: '12%'}}>
-                  <Checkbox defaultChecked /> Not Required
+                <td className="label-cell" style={{width: '20%'}}>If Half Day</td>
+                <td className="checkbox-cell">
+                   Not Required <Checkbox />
                 </td>
-                <td style={{width: '10%', textAlign: 'center'}}>
-                  <Input bordered={false} className="form-input small-input" defaultValue="0" />
-                  <div className="sub-label">day(s)</div>
+                <td className="checkbox-cell">
+                   Morning <Checkbox />
                 </td>
-                <td style={{width: '23%'}}></td>
-                <td style={{width: '10%', textAlign: 'center'}}>
-                  <Input bordered={false} className="form-input small-input" defaultValue="0" />
-                  <div className="sub-label">days</div>
+                <td className="checkbox-cell">
+                   Evening <Checkbox />
                 </td>
-                <td style={{width: '30%'}}></td>
+                <td className="checkbox-cell"></td>
+                <td className="checkbox-cell"></td>
               </tr>
               <tr>
                 <td className="label-cell">Leave Type</td>
                 <td className="checkbox-cell">
-                  <Checkbox /> Casual
+                   Casual <Checkbox />
                 </td>
-                <td style={{textAlign: 'center'}}>
-                  <Input bordered={false} className="form-input small-input" defaultValue="0" />
-                  <div className="sub-label">day(s)</div>
+                <td className="checkbox-cell">
+                   Sick <Checkbox />
                 </td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td className="checkbox-cell">
+                   Annual <Checkbox />
+                </td>
+                <td className="checkbox-cell">
+                   Replacement <Checkbox />
+                </td>
+                <td className="checkbox-cell">
+                   Without Pay <Checkbox />
+                </td>
               </tr>
               <tr>
                 <td className="label-cell">Available Leave</td>
-                <td style={{textAlign: 'center'}}>
-                  <Input bordered={false} className="form-input small-input" defaultValue="0" />
-                  <div className="sub-label">day(s)</div>
+                <td>
+                  <Input bordered={false} className="form-input" /> day(s)
                 </td>
-                <td colSpan={2} className="label-cell" style={{paddingLeft: '20px'}}>
-                  Contact<br/>(During Leave) :
+                <td>
+                  <Input bordered={false} className="form-input" /> day(s)
                 </td>
-                <td colSpan={2}>
-                  <Input bordered={false} className="form-input" />
+                <td>
+                  <Input bordered={false} className="form-input" /> day(s)
+                </td>
+                <td className="checkbox-cell">
+                   <Input bordered={false} className="form-input" /> day(s)
+                </td>
+                <td className="checkbox-cell">
+                  <Input bordered={false} className="form-input" /> day(s)
                 </td>
               </tr>
               <tr>
                 <td className="label-cell">Station<br/>(During Leave) :</td>
-                <td colSpan={5}>
+                <td colSpan={2}>
+                  <Input bordered={false} className="form-input" />
+                </td>
+                <td className="label-cell">Contact<br/>(During Leave) :</td>
+                <td colSpan={2}>
                   <Input bordered={false} className="form-input" />
                 </td>
               </tr>
@@ -175,8 +187,7 @@ const LeavePage = () => {
                 <td colSpan={5}>
                   <Input.TextArea bordered={false} rows={3} className="form-textarea" />
                   <div className="signature-section">
-                    <div className="signature-line">Applicant's Signature</div>
-                    <div className="signature-line">Date:</div>
+                    <div className='applicant-signature-line'>Applicant's Signature <br /> Date</div>
                   </div>
                 </td>
               </tr>
@@ -289,7 +300,7 @@ const LeavePage = () => {
             </tr>
             <tr>
               <td className="checkbox-cell">
-                <Checkbox defaultChecked /> Sick
+                <Checkbox /> Sick
               </td>
               <td className="checkbox-cell">
                 <Checkbox /> Annual
