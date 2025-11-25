@@ -104,7 +104,6 @@
 }
 
 .form-table td {
-  padding: 6px 8px;
   border: 1px solid #000;
   font-size: 12px;
   vertical-align: middle;
@@ -124,6 +123,7 @@
   font-weight: bold;
   font-size: 13px;
   margin-bottom: 0;
+  border-collapse: collapse;
 }
 
 /* Form Inputs */
@@ -222,12 +222,9 @@
 /* Approval Table */
 .approval-table {
   margin-top: 20px;
-  border-top: 3px dashed #000 !important;
 }
 
 .approval-cell {
-  width: 33.33%;
-  padding: 15px !important;
   vertical-align: top;
   background: #fafafa;
 }
