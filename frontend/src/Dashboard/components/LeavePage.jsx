@@ -1,338 +1,64 @@
-import React from 'react';
-import { Form, Input, Checkbox, Row, Col } from 'antd';
-import './LeavePage.css';
-import durontoLogo from "../../images/logo2.png"
+import React, { useState } from "react";
+import axios from "axios";
 
-const LeavePage = () => {
-  const [form] = Form.useForm();
+export default function LeavePage() {
+  const [formData, setFormData] = useState({
+    date: "",
+    applicantName: "",
+    employeeId: "",
+    designation: "",
+    department: "",
+    leaveDays: "",
+    leaveFrom: "",
+    leaveTo: "",
+    station: "",
+    contact: "",
+    personInCharge: "",
+    reportingTo: "",
+    reason: "",
+  });
 
-  const onFinish = (values) => {
-    console.log('Form values:', values);
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post("/api/leaves/generate-form", formData, {
+        responseType: "blob",
+      });
+
+      const url = window.URL.createObjectURL(new Blob([res.data], { type: "application/pdf" }));
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "LeaveApplicationForm.pdf";
+      link.click();
+    } catch (error) {
+      console.error("PDF generation failed:", error);
+      alert("Failed to generate PDF. Check console for details.");
+    }
   };
 
   return (
-    <div className="leave-form-wrapper">
-      {/* OFFICE COPY */}
-      <div className="leave-form-container">
-        {/* Header */}
-        <div className="form-header">
-          <div className="company-logo">Renaissance</div>
-          <div className="company-info">
-            <div className="company-name">Barind Media Ltd.</div>
-            <div>Ahmed Tower, 28 & 30, Kemal Ataturk Avenue</div>
-            <div>Banani, Dhaka 1213, Bangladesh</div>
-          </div>
-          <div className="logo-box">
-            <img src={durontoLogo} alt="" />
-          </div>
-        </div>
-
-        <div className="form-title-section">
-          <div className="form-title-box">Leave Application Form</div>
-          <div className="copy-label">Office copy</div>
-        </div>
-
-        <Form form={form} onFinish={onFinish} className="leave-form">
-          {/* Basic Info Row */}
-          <table className="form-table">
-            <tbody>
-              <tr>
-                <td className="label-cell">Applicant Name :</td>
-                <td>
-                  <Input bordered={false} className="form-input" />
-                </td>
-                <td className="label-cell">Employee ID :</td>
-                <td>
-                  <Input bordered={false} className="form-input" />
-                </td>
-              </tr>
-              <tr>
-                <td className="label-cell">Designation :</td>
-                <td>
-                  <Input bordered={false} className="form-input" />
-                </td>
-                <td className="label-cell">Department :</td>
-                <td>
-                  <Input bordered={false} className="form-input" />
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          {/* Details of Requesting Leave */}
-          <div className="section-header">Details of Requesting Leave</div>
-          <table className="form-table">
-            <tbody>
-              <tr>
-                <td className="label-cell" style={{ width: '15%' }}>No. of Day(s)</td>
-                <td style={{ width: '12%', textAlign: 'center' }}>
-                  <Input bordered={false} className="form-input center-input" />
-                  <div className="sub-label">day(s)</div>
-                </td>
-                <td className="label-cell" style={{ width: '10%' }}>From:</td>
-                <td style={{ width: '23%' }}>
-                  <Input bordered={false} className="form-input" />
-                </td>
-                <td className="label-cell" style={{ width: '10%' }}>To:</td>
-                <td style={{ width: '30%' }}>
-                  <Input bordered={false} className="form-input" />
-                </td>
-              </tr>
-              <tr>
-                <td className="label-cell" style={{ width: '20%' }}>If Half Day</td>
-                <td className="checkbox-cell">
-                  Not Required <Checkbox />
-                </td>
-                <td className="checkbox-cell">
-                  Morning <Checkbox />
-                </td>
-                <td className="checkbox-cell">
-                  Evening <Checkbox />
-                </td>
-                <td className="checkbox-cell"></td>
-                <td className="checkbox-cell"></td>
-              </tr>
-              <tr>
-                <td className="label-cell">Leave Type</td>
-                <td className="checkbox-cell">
-                  Casual <Checkbox />
-                </td>
-                <td className="checkbox-cell">
-                  Sick <Checkbox />
-                </td>
-                <td className="checkbox-cell">
-                  Annual <Checkbox />
-                </td>
-                <td className="checkbox-cell">
-                  Replacement <Checkbox />
-                </td>
-                <td className="checkbox-cell">
-                  Without Pay <Checkbox />
-                </td>
-              </tr>
-              <tr>
-                <td className="label-cell">Available Leave</td>
-                <td>
-                  <Input bordered={false} className="form-input" /> day(s)
-                </td>
-                <td>
-                  <Input bordered={false} className="form-input" /> day(s)
-                </td>
-                <td>
-                  <Input bordered={false} className="form-input" /> day(s)
-                </td>
-                <td className="checkbox-cell">
-                  <Input bordered={false} className="form-input" /> day(s)
-                </td>
-                <td className="checkbox-cell">
-                  <Input bordered={false} className="form-input" /> day(s)
-                </td>
-              </tr>
-              <tr>
-                <td className="label-cell">Station<br />(During Leave) :</td>
-                <td colSpan={2}>
-                  <Input bordered={false} className="form-input" />
-                </td>
-                <td className="label-cell">Contact<br />(During Leave) :</td>
-                <td colSpan={2}>
-                  <Input bordered={false} className="form-input" />
-                </td>
-              </tr>
-              <tr>
-                <td className="label-cell" style={{ verticalAlign: 'top' }}>Person In-Charge<br />(During My Leave) :</td>
-                <td colSpan={5}>
-                  <Input bordered={false} className="form-input" />
-                  <div className="signature-line">Signature</div>
-                </td>
-              </tr>
-              <tr>
-                <td className="label-cell">Reporting To :</td>
-                <td colSpan={5}>
-                  <Input bordered={false} className="form-input" />
-                  <div className="signature-line">Signature</div>
-                </td>
-              </tr>
-              <tr>
-                <td className="label-cell" style={{ verticalAlign: 'top' }}>Reason of Leave :</td>
-                <td colSpan={5}>
-                  <Input.TextArea bordered={false} rows={3} className="form-textarea" />
-                  <div className="signature-section">
-                    <div className='applicant-signature-line'>Applicant's Signature <br /> Date</div>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          {/* Approval Section */}
-          <table className="form-table approval-table">
-            <tbody>
-              <tr>
-                <td className="approval-cell">
-                  <div className="section-header">Approved by Departmental Head</div>
-                  <div className="approval-space"></div>
-                  <div className="approval-date">Date:</div>
-                </td>
-                <td className="approval-cell">
-                  <div className="section-header">Approved by Final Authority</div>
-                  <div className="approval-space"></div>
-                  <div className="approval-date">Date:</div>
-                </td>
-                <td className="approval-cell">
-                  <div className="section-header">Endorsed by HR Department</div>
-                  <div className="approval-space"></div>
-                  <div className="approval-date">Date:</div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </Form>
-      </div>
-
-      {/* APPLICANT COPY */}
-      <div className="leave-form-container" style={{ marginTop: '40px' }}>
-        <div className="form-header">
-          <div className="company-logo">Renaissance</div>
-          <div className="company-info">
-            <div className="company-name">Barind Media Ltd.</div>
-            <div>Ahmed Tower, 28 & 30, Kemal Ataturk Avenue</div>
-            <div>Banani, Dhaka 1213, Bangladesh</div>
-          </div>
-          <div className="logo-box">
-            <img src={durontoLogo} alt="" />
-          </div>
-        </div>
-
-        <div className="form-title-section">
-          <div className="form-title-box">Leave Application Form</div>
-          <div className="copy-label">Applicant copy</div>
-        </div>
-
-        <table className="form-table">
-          <tbody>
-            <tr>
-              <td className="label-cell">Applicant Name :</td>
-              <td>
-                <Input bordered={false} className="form-input" />
-              </td>
-              <td className="label-cell">Employee ID :</td>
-              <td>
-                <Input bordered={false} className="form-input" />
-              </td>
-            </tr>
-            <tr>
-              <td className="label-cell">Designation :</td>
-              <td>
-                <Input bordered={false} className="form-input" />
-              </td>
-              <td className="label-cell">Department :</td>
-              <td>
-                <Input bordered={false} className="form-input" />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div className="section-header">Details of Requesting Leave</div>
-
-        <table className="form-table details-table">
-          <tbody>
-            <tr>
-                <td className="label-cell" style={{ width: '15%' }}>No. of Day(s)</td>
-                <td style={{ width: '12%', textAlign: 'center' }}>
-                  <Input bordered={false} className="form-input center-input" />
-                  <div className="sub-label">day(s)</div>
-                </td>
-                <td className="label-cell" style={{ width: '10%' }}>From:</td>
-                <td style={{ width: '23%' }}>
-                  <Input bordered={false} className="form-input" />
-                </td>
-                <td className="label-cell" style={{ width: '10%' }}>To:</td>
-                <td style={{ width: '30%' }}>
-                  <Input bordered={false} className="form-input" />
-                </td>
-              </tr>
-              <tr>
-                <td className="label-cell" style={{ width: '20%' }}>If Half Day</td>
-                <td className="checkbox-cell">
-                  Not Required <Checkbox />
-                </td>
-                <td className="checkbox-cell">
-                  Morning <Checkbox />
-                </td>
-                <td className="checkbox-cell">
-                  Evening <Checkbox />
-                </td>
-                <td className="checkbox-cell"></td>
-                <td className="checkbox-cell"></td>
-              </tr>
-              <tr>
-                <td className="label-cell">Leave Type</td>
-                <td className="checkbox-cell">
-                  Casual <Checkbox />
-                </td>
-                <td className="checkbox-cell">
-                  Sick <Checkbox />
-                </td>
-                <td className="checkbox-cell">
-                  Annual <Checkbox />
-                </td>
-                <td className="checkbox-cell">
-                  Replacement <Checkbox />
-                </td>
-                <td className="checkbox-cell">
-                  Without Pay <Checkbox />
-                </td>
-              </tr>
-              <tr>
-                <td className="label-cell">Available Leave</td>
-                <td>
-                  <Input bordered={false} className="form-input" /> day(s)
-                </td>
-                <td>
-                  <Input bordered={false} className="form-input" /> day(s)
-                </td>
-                <td>
-                  <Input bordered={false} className="form-input" /> day(s)
-                </td>
-                <td className="checkbox-cell">
-                  <Input bordered={false} className="form-input" /> day(s)
-                </td>
-                <td className="checkbox-cell">
-                  <Input bordered={false} className="form-input" /> day(s)
-                </td>
-              </tr>
-              <tr></tr>
-          </tbody>
-        </table>
-
-        <table className="form-table">
-          <tbody>
-            <tr>
-              <td colSpan={4} className="endorsement-section">
-                <div className="endorsed-text">Endorsed by HR Department</div>
-                <div className="name-field">
-                  <div>Date:</div>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div className="footer-info">
-          
-          <div className="issue-info">
-            <div>Issue Date: July 27, 2021</div>
-            <div>Ref.: BML/HRF/V1/010/21</div>
-          </div>
-          <div className="form-type">
-            <div>LAF</div>
-            <div>HR Form of BML</div>
-          </div>
-        </div>
-      </div>
+    <div style={{ maxWidth: "600px", margin: "20px auto", padding: "20px", border: "1px solid #ddd", borderRadius: "8px" }}>
+      <h2>Leave Application Form</h2>
+      <form onSubmit={handleSubmit}>
+        <input type="date" name="date" value={formData.date} onChange={handleChange} required />
+        <input name="applicantName" placeholder="Applicant Name" value={formData.applicantName} onChange={handleChange} required />
+        <input name="employeeId" placeholder="Employee ID" value={formData.employeeId} onChange={handleChange} required />
+        <input name="designation" placeholder="Designation" value={formData.designation} onChange={handleChange} required />
+        <input name="department" placeholder="Department" value={formData.department} onChange={handleChange} required />
+        <input type="number" name="leaveDays" placeholder="No. of Leave Days" value={formData.leaveDays} onChange={handleChange} required />
+        <input type="date" name="leaveFrom" value={formData.leaveFrom} onChange={handleChange} required />
+        <input type="date" name="leaveTo" value={formData.leaveTo} onChange={handleChange} required />
+        <input name="station" placeholder="Station" value={formData.station} onChange={handleChange} required />
+        <input name="contact" placeholder="Contact" value={formData.contact} onChange={handleChange} required />
+        <input name="personInCharge" placeholder="Person In Charge" value={formData.personInCharge} onChange={handleChange} required />
+        <input name="reportingTo" placeholder="Reporting To" value={formData.reportingTo} onChange={handleChange} required />
+        <textarea name="reason" placeholder="Reason" value={formData.reason} onChange={handleChange} required />
+        <button type="submit" style={{ marginTop: "10px" }}>Generate PDF</button>
+      </form>
     </div>
   );
-};
-
-export default LeavePage;
+}
