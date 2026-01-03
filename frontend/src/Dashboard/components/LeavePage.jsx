@@ -1,10 +1,14 @@
 // LeavePage.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { X } from "lucide-react";
+import { Spin } from "antd";
+import userContext from "../../context/userContext";
 import "./LeavePage.css";
 
 export default function LeavePage() {
+  const auth = useContext(userContext);
+  const [userData, setUserData] = useState(null);
   const [formData, setFormData] = useState({
     date: "",
     applicantName: "",
@@ -28,6 +32,38 @@ export default function LeavePage() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [fetchingUser, setFetchingUser] = useState(true);
+
+  // Fetch logged-in user data
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/users/${auth.userId}`);
+        const user = response.data.user;
+        setUserData(user);
+        
+        // Auto-fill form fields with user data
+        setFormData(prev => ({
+          ...prev,
+          applicantName: user.name || "",
+          employeeId: user._id || "",
+          designation: user.position || "",
+          contact: user.phone || "",
+          // Set today's date as default
+          date: new Date().toISOString().split('T')[0]
+        }));
+        
+        setFetchingUser(false);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setFetchingUser(false);
+      }
+    };
+
+    if (auth.userId) {
+      getUserData();
+    }
+  }, [auth.userId]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -59,6 +95,11 @@ export default function LeavePage() {
   };
 
   const today = new Date().toISOString().split('T')[0];
+
+  // Show loading spinner while fetching user data
+  if (fetchingUser) {
+    return <Spin fullscreen />;
+  }
 
   return (
     <div className="leave-page-container">
@@ -180,6 +221,7 @@ export default function LeavePage() {
                 onChange={handleChange}
                 required
                 className="form-input"
+                readOnly
               />
             </div>
             <div className="input-group">
@@ -191,6 +233,7 @@ export default function LeavePage() {
                 onChange={handleChange}
                 required
                 className="form-input"
+                readOnly
               />
             </div>
           </div>
@@ -206,6 +249,7 @@ export default function LeavePage() {
                 onChange={handleChange}
                 required
                 className="form-input"
+                readOnly
               />
             </div>
             <div className="input-group">

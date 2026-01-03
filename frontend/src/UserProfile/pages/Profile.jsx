@@ -36,6 +36,8 @@ const Profile = () => {
     getSelectedUserData();
   }, [uid, editMode]);
 
+  console.log(selectedUser)
+
   if (!editMode) {
     return (
       <>

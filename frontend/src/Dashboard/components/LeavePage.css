@@ -143,6 +143,13 @@ select:focus {
   color: #d1d5db;
 }
 
+.form-input:read-only {
+  background-color: #f9fafb;
+  color: #6b7280;
+  cursor: not-allowed;
+  border-bottom-color: #f3f4f6;
+}
+
 /* Textarea */
 .form-textarea {
   width: 100%;
