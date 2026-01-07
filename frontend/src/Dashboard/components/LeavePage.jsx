@@ -41,7 +41,7 @@ export default function LeavePage() {
         const response = await axios.get(`http://localhost:5000/api/users/${auth.userId}`);
         const user = response.data.user;
         setUserData(user);
-        
+
         // Auto-fill form fields with user data
         setFormData(prev => ({
           ...prev,
@@ -52,7 +52,7 @@ export default function LeavePage() {
           // Set today's date as default
           date: new Date().toISOString().split('T')[0]
         }));
-        
+
         setFetchingUser(false);
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -72,20 +72,34 @@ export default function LeavePage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    try {
-      const res = await axios.post("/api/leaves/generate-form", formData, {
-        responseType: "blob",
-      });
 
-      const url = window.URL.createObjectURL(new Blob([res.data]));
+    try {
+      const res = await axios.post(
+        "/api/leaves/generate-form",
+        formData,
+        { responseType: "blob" }
+      );
+
+      // Axios already returns a Blob
+      const blob = res.data;
+
+      console.log("Downloaded PDF size:", blob.size); // DEBUG
+
+      if (blob.size === 0) {
+        throw new Error("Received empty PDF");
+      }
+
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
+
       link.href = url;
-      link.download = `Leave_Application_${formData.applicantName.replace(/\s+/g, '_')}.pdf`;
+      link.download = `Leave_Application_${formData.applicantName.replace(/\s+/g, "_")}.pdf`;
+
       document.body.appendChild(link);
       link.click();
       link.remove();
-      
-      setTimeout(() => window.URL.revokeObjectURL(url), 100);
+
+      window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("PDF generation failed:", error);
       alert("Failed to generate PDF. Please try again.");
@@ -93,6 +107,7 @@ export default function LeavePage() {
       setLoading(false);
     }
   };
+
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -105,7 +120,7 @@ export default function LeavePage() {
     <div className="leave-page-container">
       <div className="leave-page-card">
         {/* Close Button */}
-        <button 
+        <button
           type="button"
           className="close-button"
           onClick={() => window.history.back()}
@@ -118,7 +133,7 @@ export default function LeavePage() {
           <svg width="200" height="80" viewBox="0 0 200 80" className="cityscape-svg">
             {/* Sun */}
             <circle cx="170" cy="12" r="8" fill="currentColor" opacity="0.5" />
-            
+
             {/* Buildings */}
             <g fill="none" stroke="currentColor" strokeWidth="2" opacity="0.5">
               {/* Building 1 */}
@@ -127,7 +142,7 @@ export default function LeavePage() {
               <line x1="13" y1="55" x2="29" y2="55" />
               <line x1="13" y1="61" x2="29" y2="61" />
               <line x1="13" y1="67" x2="29" y2="67" />
-              
+
               {/* Building 2 - Tall */}
               <rect x="36" y="25" width="18" height="50" rx="1" />
               <line x1="39" y1="29" x2="51" y2="29" />
@@ -138,7 +153,7 @@ export default function LeavePage() {
               <line x1="39" y1="59" x2="51" y2="59" />
               <line x1="39" y1="65" x2="51" y2="65" />
               <line x1="39" y1="71" x2="51" y2="71" />
-              
+
               {/* Building 3 - Tallest */}
               <rect x="58" y="15" width="26" height="60" rx="1" />
               <line x1="61" y1="19" x2="81" y2="19" />
@@ -151,7 +166,7 @@ export default function LeavePage() {
               <line x1="61" y1="61" x2="81" y2="61" />
               <line x1="61" y1="67" x2="81" y2="67" />
               <line x1="61" y1="73" x2="81" y2="73" />
-              
+
               {/* Building 4 */}
               <rect x="88" y="38" width="20" height="37" rx="1" />
               <line x1="91" y1="42" x2="105" y2="42" />
@@ -160,7 +175,7 @@ export default function LeavePage() {
               <line x1="91" y1="60" x2="105" y2="60" />
               <line x1="91" y1="66" x2="105" y2="66" />
               <line x1="91" y1="72" x2="105" y2="72" />
-              
+
               {/* Building 5 - Tall */}
               <rect x="112" y="22" width="24" height="53" rx="1" />
               <line x1="115" y1="26" x2="133" y2="26" />
@@ -172,14 +187,14 @@ export default function LeavePage() {
               <line x1="115" y1="62" x2="133" y2="62" />
               <line x1="115" y1="68" x2="133" y2="68" />
               <line x1="115" y1="74" x2="133" y2="74" />
-              
+
               {/* Building 6 */}
               <rect x="140" y="48" width="20" height="27" rx="1" />
               <line x1="143" y1="52" x2="157" y2="52" />
               <line x1="143" y1="58" x2="157" y2="58" />
               <line x1="143" y1="64" x2="157" y2="64" />
               <line x1="143" y1="70" x2="157" y2="70" />
-              
+
               {/* Building 7 */}
               <rect x="164" y="42" width="18" height="33" rx="1" />
               <line x1="167" y1="46" x2="179" y2="46" />
@@ -188,7 +203,7 @@ export default function LeavePage() {
               <line x1="167" y1="64" x2="179" y2="64" />
               <line x1="167" y1="70" x2="179" y2="70" />
             </g>
-            
+
             {/* Ground line */}
             <line x1="5" y1="75" x2="195" y2="75" stroke="currentColor" strokeWidth="2" opacity="0.4" />
           </svg>
