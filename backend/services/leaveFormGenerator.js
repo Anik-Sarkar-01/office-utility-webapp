@@ -7,48 +7,60 @@ module.exports = async function generateLeaveForm(data) {
   const filePath = path.join(__dirname, "../templates/LeaveApplicationForm.pdf");
   const fontPath = path.join(__dirname, "../fonts/DejaVuSans.ttf");
 
+  // ---- SAFETY CHECKS ----
+  if (!fs.existsSync(filePath)) {
+    throw new Error("Template PDF not found");
+  }
+  if (!fs.existsSync(fontPath)) {
+    throw new Error("Font file not found");
+  }
+
   const existingPdf = fs.readFileSync(filePath);
   const pdfDoc = await PDFDocument.load(existingPdf);
 
   // REQUIRED for custom fonts
   pdfDoc.registerFontkit(fontkit);
 
-  // Standard font for normal text
+  // Fonts
   const textFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
-
-  // Unicode font for ✓
   const tickFontBytes = fs.readFileSync(fontPath);
   const tickFont = await pdfDoc.embedFont(tickFontBytes);
 
   const page = pdfDoc.getPages()[0];
 
-  const drawWrappedText = (text, x, y, maxWidth, size = 10, lineHeight = 14) => {
+  const drawWrappedText = (
+    text,
+    x,
+    y,
+    maxWidth,
+    size = 10,
+    lineHeight = 14
+  ) => {
     if (!text) return;
 
-    const words = text.split(" ");
+    const words = String(text).split(" ");
     let line = "";
     let cursorY = y;
 
-    for (let i = 0; i < words.length; i++) {
-      const testLine = line + words[i] + " ";
+    for (const word of words) {
+      const testLine = line + word + " ";
       const width = textFont.widthOfTextAtSize(testLine, size);
 
       if (width > maxWidth) {
         page.drawText(line, { x, y: cursorY, size, font: textFont });
-        line = words[i] + " ";
+        line = word + " ";
         cursorY -= lineHeight;
       } else {
         line = testLine;
       }
     }
 
-    // Draw remaining text
     page.drawText(line, { x, y: cursorY, size, font: textFont });
   };
 
-
   const draw = (text, x, y, size = 10) => {
-    page.drawText(text || "", {
+    if (text === undefined || text === null) return;
+    page.drawText(String(text), {
       x,
       y,
       size,
@@ -57,7 +69,6 @@ module.exports = async function generateLeaveForm(data) {
     });
   };
 
-  // ✅ Real tick sign
   const tick = (x, y) => {
     page.drawText("✓", {
       x,
@@ -67,8 +78,6 @@ module.exports = async function generateLeaveForm(data) {
       color: rgb(0, 0, 0),
     });
   };
-
-  console.log(data)
 
   // ---------------- TEXT FIELDS ----------------
   draw(data.date, 50, 758);
@@ -85,7 +94,6 @@ module.exports = async function generateLeaveForm(data) {
   draw(data.availableSick, 250, 633);
   draw(data.availableAnnual, 335, 633);
 
-
   draw(data.station, 130, 613);
   draw(data.contact, 400, 613);
 
@@ -93,7 +101,6 @@ module.exports = async function generateLeaveForm(data) {
   draw(data.reportingTo, 130, 545);
 
   drawWrappedText(data.reason, 120, 503, 340);
-
   draw(data.date, 465, 458);
 
   // Applicant Copy
@@ -110,23 +117,17 @@ module.exports = async function generateLeaveForm(data) {
   draw(data.availableAnnual, 335, 145);
 
   // ---------------- CHECKBOXES ----------------
-
   if (data.halfDay === "Not Required") {
     tick(188, 669);
     tick(188, 180);
-  }
-
-  if (data.halfDay === "Morning") {
+  } else if (data.halfDay === "Morning") {
     tick(268, 669);
     tick(268, 180);
-  }
-
-  if (data.halfDay === "Evening") {
+  } else if (data.halfDay === "Evening") {
     tick(457, 669);
     tick(457, 180);
   }
 
-  // Leave Type
   switch (data.leaveType) {
     case "Casual":
       tick(188, 650);
@@ -148,10 +149,9 @@ module.exports = async function generateLeaveForm(data) {
       tick(532, 652);
       tick(532, 162);
       break;
-    default:
-      console.log("No leave type selected");
   }
 
-
-  return await pdfDoc.save();
+  
+  const pdfBytes = await pdfDoc.save();
+  return Buffer.from(pdfBytes);
 };

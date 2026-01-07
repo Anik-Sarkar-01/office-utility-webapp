@@ -16,19 +16,28 @@ leaveRoutes.get("/applied-leave", leaveEmployee);
 leaveRoutes.patch("/applyForleave/:uid", applyForLeave);
 leaveRoutes.patch("/approve-leave/:leaveId", approveLeave);
 
-// 🧾 NEW: Generate & Download Leave Form
 leaveRoutes.post("/generate-form", async (req, res, next) => {
-  console.log("I am in the leave routes")
+  console.log("I am in the leave routes");
+
   try {
-    const pdfBytes = await generateLeaveForm(req.body);
+    // This is already a Buffer
+    const pdfBuffer = await generateLeaveForm(req.body);
+
+    console.log("PDF size:", pdfBuffer.length); // DEBUG (remove later)
 
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", "attachment; filename=LeaveApplicationForm.pdf");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=LeaveApplicationForm.pdf"
+    );
+    res.setHeader("Content-Length", pdfBuffer.length);
 
-    res.send(Buffer.from(pdfBytes));
+    res.send(pdfBuffer);
   } catch (error) {
+    console.error(error);
     next(error);
   }
 });
+
 
 module.exports = leaveRoutes;
